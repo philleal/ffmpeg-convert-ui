@@ -136,7 +136,6 @@ class _MainViewState extends State<MainView> {
           Text("Queue"),
           Expanded(
             child: ListView.builder(
-              //itemCount: _videoConvertQueue.length,
               itemCount: this.itemsToConvert.length,
               itemBuilder: (BuildContext context, int index) {
                 ConvertQueueEntry currentEntry =

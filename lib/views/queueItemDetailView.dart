@@ -67,36 +67,86 @@ class _QueueItemDetailViewState extends State<QueueItemDetailView> {
               color: Colors.blue,
               textColor: Colors.white,
             ),
-            Text("Source"),
-            Padding(
-                padding: EdgeInsets.all(20),
-                child: Container(
-                  child: TextField(
-                    controller: this.sourcePathController,
-                    decoration: InputDecoration(border: OutlineInputBorder()),
-                    enabled: true,
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.only(left: 20),
+                  width: 100,
+                  child: Text(
+                    "Source: ",
                   ),
-                )),
-            Text("Target"),
-            Container(
-                child: Padding(
-              padding: EdgeInsets.all(20),
-              child: TextField(
-                controller: this.targetPathController,
-                decoration: InputDecoration(border: OutlineInputBorder()),
-                enabled: true,
-              ),
-            )),
-            Text("Options"),
-            Container(
-              child: Padding(
-                padding: EdgeInsets.all(20),
-                child: TextField(
-                  controller: this.optionsPathController,
-                  decoration: InputDecoration(border: OutlineInputBorder()),
-                  enabled: true,
                 ),
-              ),
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.only(top: 20, bottom: 20, right: 20),
+                    child: TextField(
+                      controller: this.sourcePathController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      enabled: true,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.only(left: 20),
+                  width: 100,
+                  child: Text(
+                    "Target: ",
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.only(top: 20, bottom: 20, right: 20),
+                    child: TextField(
+                      controller: this.targetPathController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      enabled: true,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.only(left: 20),
+                  width: 100,
+                  child: Text(
+                    "Options: ",
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.only(top: 20, bottom: 20, right: 20),
+                    child: TextField(
+                      controller: this.optionsPathController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      enabled: true,
+                    ),
+                  ),
+                ),
+              ],
             ),
             Row(
               children: [
