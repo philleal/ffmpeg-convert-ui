@@ -32,6 +32,7 @@ class _nameState extends State<SettingsView> {
             Row(
               children: [
                 Container(
+                  padding: EdgeInsets.only(left: 20),
                   width: 200,
                   child: Text(
                     "FFMPEG path: ",
@@ -58,6 +59,7 @@ class _nameState extends State<SettingsView> {
             Row(
               children: [
                 Container(
+                  padding: EdgeInsets.only(left: 20),
                   width: 200,
                   child: Text(
                     "FFMPEG options: ",
@@ -89,6 +91,11 @@ class _nameState extends State<SettingsView> {
                   minWidth: 200,
                   color: Colors.blue,
                   onPressed: () {
+                    if (this._config.saveToFile("config.json") == false) {
+                      print("there was an error saving the file");
+                    } else {
+                      print("saved the config successfully");
+                    }
                     Navigator.pop(context);
                   },
                 ),

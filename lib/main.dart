@@ -11,10 +11,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    Config config = new Config();
-
-    config.loadFromFile("path");
-
     return MaterialApp(
       title: 'Video Conversion',
       theme: ThemeData(
@@ -33,7 +29,7 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Video Converter', config: config),
+      home: MyHomePage(title: 'Video Converter'),
     );
   }
 }
@@ -63,7 +59,12 @@ class _MyHomePageState extends State<MyHomePage> {
   MainView mainView;
 
   _MyHomePageState(Config config) {
-    this._config = config;
+    //this._config = config;
+
+    Config.loadFromFile("config.json").then((value) {
+      _config = value;
+      print("loaded the config");
+    });
   }
 
   void _incrementCounter() {
