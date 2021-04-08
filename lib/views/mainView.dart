@@ -6,12 +6,16 @@ import 'dart:io';
 //import 'package:file_picker/file_picker.dart';
 import 'package:file_picker_cross/file_picker_cross.dart';
 import 'package:flutter/material.dart';
+import 'package:video_convert/objects/config.dart';
 import 'package:video_convert/objects/convertQueueEntry.dart';
 import 'package:video_convert/views/queueItemDetailView.dart';
+import 'package:video_convert/views/settingsView.dart';
 
 class MainView extends StatefulWidget {
-  AppBar _appBar;
-  MainView({Key key}) : super(key: key);
+  //AppBar _appBar;
+  final String title;
+  MainView({Key key, this.title}) : super(key: key);
+
   void start() {}
   void showAddItemToQueue(ConvertQueueEntry convertQueueEntry) async {
     mainViewState.showAddItemToQueue(convertQueueEntry);
@@ -32,12 +36,13 @@ class _MainViewState extends State<MainView> {
   String _commandOutput = "This is where the output goes";
   TextEditingController outputTextEditingController =
       TextEditingController(text: "");
+  Config _config;
 
-  _MainScreenState() {
-    /*ConvertQueueEntry convertQueueEntry = ConvertQueueEntry();
-    convertQueueEntry.source = "source: testfiletoconvert.mp4";
-    convertQueueEntry.options = "options: option 1";
-    itemsToConvert.add(convertQueueEntry);*/
+  _MainViewState() {
+    Config.loadFromFile("config.json").then((value) {
+      _config = value;
+      print("loaded the config");
+    });
   }
 
   void showAddItemToQueue(ConvertQueueEntry convertQueueEntry) async {
@@ -128,9 +133,123 @@ class _MainViewState extends State<MainView> {
     });
   }
 
+  List<Widget> _getMenuItems() {
+    List<Widget> items = [
+      DrawerHeader(child: Text("drawer header")),
+      ListTile(
+        title: Text("Settings"),
+        onTap: () {
+          Navigator.of(context).pop();
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => SettingsView(config: this._config)));
+        },
+      )
+    ];
+
+    return items;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Scaffold(
+      drawer: Drawer(
+          child: ListView(
+        children: _getMenuItems(),
+      )),
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Column(
+          children: <Widget>[
+            Text("Queue"),
+            Expanded(
+              child: ListView.builder(
+                itemCount: this.itemsToConvert.length,
+                itemBuilder: (BuildContext context, int index) {
+                  ConvertQueueEntry currentEntry =
+                      this.itemsToConvert.elementAt(index);
+
+                  return ListTile(
+                      tileColor: (currentEntry.active == true)
+                          ? Colors.green
+                          : Colors.white,
+                      title: Text("source: " + currentEntry.sourceFile),
+                      subtitle: Text("options: " + currentEntry.options),
+                      trailing: IconButton(
+                        icon: (currentEntry.active == true)
+                            ? Icon(Icons.stop)
+                            : Icon(Icons.delete),
+                        onPressed: () {
+                          setState(() {
+                            itemsToConvert
+                                .remove(itemsToConvert.elementAt(index));
+                          });
+                        },
+                      ),
+                      onTap: () {
+                        this.showAddItemToQueue(currentEntry);
+                      });
+                },
+              ),
+            ),
+            Text("Output"),
+            Container(
+              constraints: BoxConstraints(maxHeight: 200),
+              child: Padding(
+                  padding: EdgeInsets.all(20),
+                  child: TextField(
+                    controller: this.outputTextEditingController,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.all(5)),
+                    enabled: true,
+                    maxLines: null,
+                    readOnly: true,
+                  )),
+            ),
+            ButtonBar(
+              buttonMinWidth: 200,
+              alignment: MainAxisAlignment.center,
+              children: [
+                MaterialButton(
+                    child: Text("Clear Output"),
+                    color: Colors.blue,
+                    textColor: Colors.white,
+                    onPressed: () {
+                      setState(() {
+                        outputTextEditingController.text = "";
+                      });
+                    }),
+                MaterialButton(
+                  child: Text("Start"),
+                  color: Colors.blue,
+                  textColor: Colors.white,
+                  onPressed: () {
+                    //for (ConvertQueueEntry convertQueueEntry in this.itemsToConvert) {
+                    //print(convertQueueEntry.source);
+                    callFFMPEG();
+                    //print("we are passed the call");
+                    //}
+                  },
+                ),
+              ],
+            ),
+          ],
+        ), //Column(
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          this.showAddItemToQueue(null);
+        },
+        tooltip: 'Increment',
+        child: Icon(Icons.add),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+
+    /*return Container(
       child: Column(
         children: <Widget>[
           Text("Queue"),
@@ -208,6 +327,6 @@ class _MainViewState extends State<MainView> {
           ),
         ],
       ),
-    );
+    );*/
   }
 }
