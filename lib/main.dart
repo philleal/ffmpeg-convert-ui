@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'views/mainView.dart';
-import 'views/settingsView.dart';
-import 'objects/config.dart';
 
 void main() {
   runApp(MainApp());

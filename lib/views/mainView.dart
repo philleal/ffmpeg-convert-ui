@@ -1,7 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:video_convert/objects/config.dart';
@@ -87,15 +86,19 @@ class _MainViewState extends State<MainView> {
       convertQueueEntry.active = true;
     });
 
+    List<String> options = convertQueueEntry.options.split(" ");
+
+    List<String> allOptions = ["-i", convertQueueEntry.sourceFile];
+
+    for (String option in options) {
+      allOptions.add(option);
+    }
+
+    allOptions.add(convertQueueEntry.target);
+
     var process = await Process.start(
-      "/usr/local/bin/ffmpeg",
-      [
-        "-i",
-        convertQueueEntry.sourceFile,
-        "-vf",
-        "scale=320:-1",
-        convertQueueEntry.target,
-      ],
+      _config.ffmpegPath,
+      allOptions,
       workingDirectory: convertQueueEntry.sourceDir,
     );
 
@@ -105,7 +108,7 @@ class _MainViewState extends State<MainView> {
 
     process.exitCode.then((value) {
       this.outputTextEditingController.text +=
-          ("Exit code: " + value.toString() + '\n');
+          ("Exit code: ${value.toString()}\n");
       print("the exit code is: " + value.toString());
 
       setState(() {
