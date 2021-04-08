@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:io';
 
-//import 'package:file_picker/file_picker.dart';
-import 'package:file_picker_cross/file_picker_cross.dart';
 import 'package:flutter/material.dart';
 import 'package:video_convert/objects/config.dart';
 import 'package:video_convert/objects/convertQueueEntry.dart';
@@ -12,7 +10,6 @@ import 'package:video_convert/views/queueItemDetailView.dart';
 import 'package:video_convert/views/settingsView.dart';
 
 class MainView extends StatefulWidget {
-  //AppBar _appBar;
   final String title;
   MainView({Key key, this.title}) : super(key: key);
 
@@ -24,7 +21,6 @@ class MainView extends StatefulWidget {
   _MainViewState mainViewState;
 
   @override
-  //_MainViewState createState() => _MainViewState();
   _MainViewState createState() {
     mainViewState = _MainViewState();
     return mainViewState;
@@ -71,7 +67,6 @@ class _MainViewState extends State<MainView> {
     });
   }
 
-  //void callFFMPEG(ConvertQueueEntry convertQueueEntry) async {
   void callFFMPEG() async {
     if (itemsToConvert.isEmpty) {
       return;
@@ -135,7 +130,12 @@ class _MainViewState extends State<MainView> {
 
   List<Widget> _getMenuItems() {
     List<Widget> items = [
-      DrawerHeader(child: Text("drawer header")),
+      /*DrawerHeader(
+        child: Container(),
+        decoration: BoxDecoration(
+          color: Colors.blue,
+        ),
+      ),*/
       ListTile(
         title: Text("Settings"),
         onTap: () {
@@ -248,85 +248,5 @@ class _MainViewState extends State<MainView> {
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
-
-    /*return Container(
-      child: Column(
-        children: <Widget>[
-          Text("Queue"),
-          Expanded(
-            child: ListView.builder(
-              itemCount: this.itemsToConvert.length,
-              itemBuilder: (BuildContext context, int index) {
-                ConvertQueueEntry currentEntry =
-                    this.itemsToConvert.elementAt(index);
-
-                return ListTile(
-                    tileColor: (currentEntry.active == true)
-                        ? Colors.green
-                        : Colors.white,
-                    title: Text("source: " + currentEntry.sourceFile),
-                    subtitle: Text("options: " + currentEntry.options),
-                    trailing: IconButton(
-                      icon: (currentEntry.active == true)
-                          ? Icon(Icons.stop)
-                          : Icon(Icons.delete),
-                      onPressed: () {
-                        setState(() {
-                          itemsToConvert
-                              .remove(itemsToConvert.elementAt(index));
-                        });
-                      },
-                    ),
-                    onTap: () {
-                      this.showAddItemToQueue(currentEntry);
-                    });
-              },
-            ),
-          ),
-          Text("Output"),
-          Container(
-            constraints: BoxConstraints(maxHeight: 200),
-            child: Padding(
-                padding: EdgeInsets.all(20),
-                child: TextField(
-                  controller: this.outputTextEditingController,
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.all(5)),
-                  enabled: true,
-                  maxLines: null,
-                  readOnly: true,
-                )),
-          ),
-          ButtonBar(
-            buttonMinWidth: 200,
-            alignment: MainAxisAlignment.center,
-            children: [
-              MaterialButton(
-                  child: Text("Clear Output"),
-                  color: Colors.blue,
-                  textColor: Colors.white,
-                  onPressed: () {
-                    setState(() {
-                      outputTextEditingController.text = "";
-                    });
-                  }),
-              MaterialButton(
-                child: Text("Start"),
-                color: Colors.blue,
-                textColor: Colors.white,
-                onPressed: () {
-                  //for (ConvertQueueEntry convertQueueEntry in this.itemsToConvert) {
-                  //print(convertQueueEntry.source);
-                  callFFMPEG();
-                  //print("we are passed the call");
-                  //}
-                },
-              ),
-            ],
-          ),
-        ],
-      ),
-    );*/
   }
 }
