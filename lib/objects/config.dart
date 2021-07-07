@@ -30,7 +30,7 @@ class Config {
 
       Map configMap = jsonDecode(jsonData);
 
-      Config c = Config.fromJson(configMap);
+      c = Config.fromJson(configMap);
     } catch (exception) {
       print(exception);
     }

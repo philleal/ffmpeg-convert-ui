@@ -69,25 +69,19 @@ class _QueueItemDetailViewState extends State<QueueItemDetailView> {
             ),
             Row(
               children: [
-                Container(
-                  padding: EdgeInsets.only(left: 20),
-                  width: 100,
-                  child: Text(
-                    "Source: ",
-                  ),
-                ),
                 Expanded(
                   child: Container(
-                    padding: EdgeInsets.only(top: 20, bottom: 20, right: 20),
+                    padding: EdgeInsets.only(
+                        top: 20, bottom: 20, right: 20, left: 20),
                     child: TextField(
                       controller: this.sourcePathController,
                       decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.black,
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.black,
+                            ),
                           ),
-                        ),
-                      ),
+                          hintText: "Source"),
                       enabled: true,
                     ),
                   ),
@@ -96,16 +90,10 @@ class _QueueItemDetailViewState extends State<QueueItemDetailView> {
             ),
             Row(
               children: [
-                Container(
-                  padding: EdgeInsets.only(left: 20),
-                  width: 100,
-                  child: Text(
-                    "Target: ",
-                  ),
-                ),
                 Expanded(
                   child: Container(
-                    padding: EdgeInsets.only(top: 20, bottom: 20, right: 20),
+                    padding: EdgeInsets.only(
+                        top: 20, bottom: 20, right: 20, left: 20),
                     child: TextField(
                       controller: this.targetPathController,
                       decoration: InputDecoration(
@@ -114,6 +102,7 @@ class _QueueItemDetailViewState extends State<QueueItemDetailView> {
                             color: Colors.black,
                           ),
                         ),
+                        hintText: "target",
                       ),
                       enabled: true,
                     ),

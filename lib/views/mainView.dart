@@ -82,6 +82,15 @@ class _MainViewState extends State<MainView> {
       convertQueueEntry.target = convertQueueEntry.target.replaceAll("//", "/");
     }
 
+    if (Platform.isWindows && convertQueueEntry.sourceDir.startsWith("/")) {
+      convertQueueEntry.sourceDir =
+          convertQueueEntry.sourceDir.replaceFirst("/", "");
+    }
+
+    if (Platform.isWindows && convertQueueEntry.target.startsWith("/")) {
+      convertQueueEntry.target = convertQueueEntry.target.replaceFirst("/", "");
+    }
+
     setState(() {
       convertQueueEntry.active = true;
     });
