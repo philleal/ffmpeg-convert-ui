@@ -11,7 +11,7 @@ import 'package:video_convert/objects/dbsqlite.dart';
 
 class MainView extends StatefulWidget {
   final String title;
-  DbSqlite db;
+
   MainView({Key key, this.title}) : super(key: key);
 
   //void start() {}
@@ -25,6 +25,13 @@ class MainView extends StatefulWidget {
   _MainViewState createState() {
     mainViewState = _MainViewState();
 
+    //widget.db = DbSqlite();
+    //widget.db.initDb();
+
+    //db.initDb();
+
+    print("after init");
+
     return mainViewState;
   }
 }
@@ -35,26 +42,30 @@ class _MainViewState extends State<MainView> {
   TextEditingController outputTextEditingController =
       TextEditingController(text: "");
   Config _config;
+  DbSqlite db = DbSqlite();
 
   _MainViewState() {
     Config.loadFromFile("config.json").then((value) {
       _config = value;
       print("loaded the config");
     });
+
+    init();
+  }
+
+  void init() async {
+    await db.initDb();
   }
 
   void showAddItemToQueue(ConvertQueueEntry convertQueueEntry) async {
     //print(convertQueueEntry);
-
-    widget.db = DbSqlite();
-    widget.db.initDb();
 
     final result = Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => QueueItemDetailView(
                   convertQueueEntry: convertQueueEntry,
-                  db: widget.db,
+                  db: db,
                 )));
 
     //ConvertQueueEntry asdf = (ConvertQueueEntry)result;

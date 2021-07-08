@@ -4,6 +4,7 @@ import 'package:video_convert/objects/convertQueueEntry.dart';
 import 'dart:io';
 
 import 'package:video_convert/objects/dbsqlite.dart';
+import 'package:video_convert/objects/fileEntry.dart';
 
 class QueueItemDetailView extends StatefulWidget {
   ConvertQueueEntry convertQueueEntry;
@@ -23,6 +24,7 @@ class _QueueItemDetailViewState extends State<QueueItemDetailView> {
       TextEditingController(text: "-vf scale=320:-1");
   FilePickerCross sourceFile;
   bool deleteFile = false;
+  List<FileEntry> filesFound = [];
 
   _QueueItemDetailViewState(ConvertQueueEntry convertQueueEntry) {
     if (convertQueueEntry == null) {
@@ -39,6 +41,9 @@ class _QueueItemDetailViewState extends State<QueueItemDetailView> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.db == null) {
+      print("QueueItemDetailView::build() - widget.db is null");
+    }
     return DefaultTabController(
         length: 2,
         child: Scaffold(
@@ -196,25 +201,59 @@ class _QueueItemDetailViewState extends State<QueueItemDetailView> {
               ),
             ),
             Container(
-              child: MaterialButton(
-                child: Text("press it"),
-                minWidth: 200,
-                onPressed: () async {
-                  var myDir = Directory('D:/Development/JDK/untitled folder');
-                  List<FileSystemEntity> files = myDir.listSync();
-                  for (File file in files) {
-                    //print(file.path);
-                    //print(file.lastModifiedSync());
+                child: Column(
+              children: [
+                MaterialButton(
+                  child: Text("press it"),
+                  minWidth: 200,
+                  onPressed: () async {
+                    var myDir = Directory('D:/Development/JDK/untitled folder');
+                    List<FileSystemEntity> files = myDir.listSync();
 
                     if (widget.db != null) {
-                      widget.db.insert(file.path);
+                      for (File file in files) {
+                        try {
+                          widget.db.insert(
+                            file.path,
+                            file.lastModifiedSync(),
+                          );
+                        } catch (exception) {
+                          print(exception.toString());
+                        }
+                      }
+
+                      var temp =
+                          await widget.db.groupFilesByDateCreated("2021-07-07");
+                      setState(() {
+                        this.filesFound = temp;
+                      });
+                    } else {
+                      print("widget.db is null");
                     }
-                  }
-                },
-                color: Colors.blue,
-                textColor: Colors.white,
-              ),
-            ),
+                  },
+                  color: Colors.blue,
+                  textColor: Colors.white,
+                ),
+                Expanded(
+                  child: Container(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      itemCount: filesFound.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                          height: 50,
+                          //color: Colors.amber[colorCodes[index]],
+                          child: Center(
+                            child:
+                                Text('Entry ${filesFound[index].createDate}'),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                )
+              ],
+            )),
           ]),
         ));
 
