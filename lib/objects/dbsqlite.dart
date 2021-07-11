@@ -46,6 +46,30 @@ class DbSqlite {
           ''');
   }
 
+  Future<List<String>> getUniqueDatesCreated() async {
+    String sql =
+        //"SELECT DISTINCT $fileColumnName, substr($fileColumnCreateDatetime, 0, 8) AS $fileColumnCreateDatetime FROM $tableName";
+        "SELECT DISTINCT substr($fileColumnCreateDatetime, 0, 8) AS $fileColumnCreateDatetime FROM $tableName ORDER BY $fileColumnCreateDatetime ASC";
+    print(sql);
+
+    List<Map> values = [];
+    List<String> uniqueDates = [];
+
+    if (this._db != null) {
+      values = await _db.rawQuery(sql);
+
+      for (var value in values) {
+        uniqueDates.add(value[fileColumnCreateDatetime]);
+      }
+    } else {
+      print("DbSqlite::getUniqueDatesCreated() - _db is null");
+    }
+
+    //print("uniqueDates: $uniqueDates");
+
+    return uniqueDates;
+  }
+
   Future<List<FileEntry>> groupFilesByDateCreated(String date) async {
     String sql =
         "SELECT * FROM $tableName WHERE $fileColumnCreateDatetime like '$date%'";

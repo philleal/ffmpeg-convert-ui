@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:video_convert/objects/dbsqlite.dart';
 import 'package:video_convert/objects/fileEntry.dart';
+import 'package:video_convert/views/combineByDayView.dart';
 
 class QueueItemDetailView extends StatefulWidget {
   ConvertQueueEntry convertQueueEntry;
@@ -25,6 +26,7 @@ class _QueueItemDetailViewState extends State<QueueItemDetailView> {
   FilePickerCross sourceFile;
   bool deleteFile = false;
   List<FileEntry> filesFound = [];
+  List<String> datesFound = [];
 
   _QueueItemDetailViewState(ConvertQueueEntry convertQueueEntry) {
     if (convertQueueEntry == null) {
@@ -222,10 +224,21 @@ class _QueueItemDetailViewState extends State<QueueItemDetailView> {
                         }
                       }
 
-                      var temp =
-                          await widget.db.groupFilesByDateCreated("2021-07-07");
+                      //var temp =
+                      //await widget.db.groupFilesByDateCreated("2021-07-07");
+
+                      var uniqueDates = await widget.db.getUniqueDatesCreated();
+
+                      /*List<FileEntry> groupedFiles = [];
+
+                      for (String dateString in uniqueDates) {
+                        groupedFiles.addAll(await widget.db
+                            .groupFilesByDateCreated(dateString));
+                      }*/
+
                       setState(() {
-                        this.filesFound = temp;
+                        //this.filesFound = groupedFiles;
+                        this.datesFound = uniqueDates;
                       });
                     } else {
                       print("widget.db is null");
@@ -238,15 +251,30 @@ class _QueueItemDetailViewState extends State<QueueItemDetailView> {
                   child: Container(
                     child: ListView.builder(
                       padding: const EdgeInsets.all(8),
-                      itemCount: filesFound.length,
+                      //itemCount: filesFound.length,
+                      itemCount: datesFound.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return Container(
+                        /*return Container(
                           height: 50,
                           //color: Colors.amber[colorCodes[index]],
                           child: Center(
                             child:
-                                Text('Entry ${filesFound[index].createDate}'),
+                                //Text('Entry ${filesFound[index].createDate}'),
+                                Text('${datesFound[index]}'),
                           ),
+                        );*/
+                        return ListTile(
+                          title: Text('${datesFound[index]}'),
+                          onTap: () {
+                            print("${datesFound[index]} was clicked");
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CombineByDateView(),
+                              ),
+                            );
+                          },
                         );
                       },
                     ),
