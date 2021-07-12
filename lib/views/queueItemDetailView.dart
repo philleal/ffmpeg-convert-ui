@@ -271,7 +271,10 @@ class _QueueItemDetailViewState extends State<QueueItemDetailView> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => CombineByDateView(),
+                                builder: (context) => CombineByDateView(
+                                  date: datesFound[index],
+                                  db: widget.db,
+                                ),
                               ),
                             );
                           },

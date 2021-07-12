@@ -8,6 +8,7 @@ import 'package:video_convert/objects/convertQueueEntry.dart';
 import 'package:video_convert/views/queueItemDetailView.dart';
 import 'package:video_convert/views/settingsView.dart';
 import 'package:video_convert/objects/dbsqlite.dart';
+import 'dart:isolate';
 
 class MainView extends StatefulWidget {
   final String title;
@@ -128,6 +129,12 @@ class _MainViewState extends State<MainView> {
       allOptions,
       workingDirectory: convertQueueEntry.sourceDir,
     );
+
+    /*var receivePort = new ReceivePort();
+    Isolate.spawn(
+      (message) {},
+      receivePort.sendPort,
+    );*/
 
     process.stderr.transform(utf8.decoder).forEach((value) {
       this.outputTextEditingController.text += (value + '\n');

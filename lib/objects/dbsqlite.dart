@@ -49,7 +49,7 @@ class DbSqlite {
   Future<List<String>> getUniqueDatesCreated() async {
     String sql =
         //"SELECT DISTINCT $fileColumnName, substr($fileColumnCreateDatetime, 0, 8) AS $fileColumnCreateDatetime FROM $tableName";
-        "SELECT DISTINCT substr($fileColumnCreateDatetime, 0, 8) AS $fileColumnCreateDatetime FROM $tableName ORDER BY $fileColumnCreateDatetime ASC";
+        "SELECT DISTINCT substr($fileColumnCreateDatetime, 0, 11) AS $fileColumnCreateDatetime FROM $tableName ORDER BY $fileColumnCreateDatetime ASC";
     print(sql);
 
     List<Map> values = [];
