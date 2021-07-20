@@ -37,6 +37,94 @@ class MainView extends StatefulWidget {
   }
 }
 
+entryPoint(SendPort sendPort) async {
+  Config config;
+  //bool configReceived = false;
+  List<String> allOptions;
+  //bool allOptionsReceived = false;
+  String sourceDir = "";
+  //bool sourceDirReceived = false;
+  ConvertQueueEntry convertQueueEntry;
+  //bool convertQueueEntryReceived = false;
+  SendPort replyTo;
+
+  // Open the ReceivePort to listen for incoming messages (optional)
+  var port = new ReceivePort();
+
+  // Send messages to other Isolates
+  sendPort.send(port.sendPort);
+
+  // Listen for messages (optional)
+  await for (var data in port) {
+    // `data` is the message received.
+    //print('received $data');
+
+    /*if (data is Config) {
+      config = data;
+      configReceived = true;
+      //print("we got the Config");
+    } else if (data is List<String>) {
+      allOptions = data;
+      allOptionsReceived = true;
+      //print("we got the options");
+    } else if (data is String) {
+      sourceDir = data;
+      sourceDirReceived = true;
+      //print("we got the sourceDir");
+    } else if (data is ConvertQueueEntry) {
+      convertQueueEntry = data;
+      convertQueueEntryReceived = true;
+    }
+
+    if (configReceived &&
+        allOptionsReceived &&
+        sourceDirReceived &&
+        convertQueueEntryReceived) {
+      break;
+    }*/
+
+    config = data[0];
+    allOptions = data[1];
+    convertQueueEntry = data[2];
+    replyTo = data[3];
+
+    break;
+  }
+
+  //for (var i = 0; i < 100; i++) {
+  //replyTo.send("the value of i is: $i");
+  //print("sent the message $i");
+  //}
+
+  var process = await Process.start(
+    config.ffmpegPath,
+    allOptions,
+    workingDirectory: convertQueueEntry.sourceDir,
+  );
+
+  process.stderr.transform(utf8.decoder).forEach((value) {
+    //this.outputTextEditingController.text += (value + '\n');
+    replyTo.send(value);
+  });
+
+  process.exitCode.then((value) {
+    //this.outputTextEditingController.text +=
+    //("Exit code: ${value.toString()}\n");
+    //print("the exit code is: " + value.toString());
+
+    /*if (convertQueueEntry.delete == true) {
+      File file = File(
+          convertQueueEntry.sourceDir + "/" + convertQueueEntry.sourceFile);
+      file.delete();
+
+      replyTo.send(
+          "deleted the file: ${convertQueueEntry.sourceDir}/${convertQueueEntry.sourceFile}");
+    }*/
+
+    replyTo.send("close()");
+  });
+}
+
 class _MainViewState extends State<MainView> {
   ListQueue<ConvertQueueEntry> itemsToConvert = ListQueue<ConvertQueueEntry>();
   String _commandOutput = "This is where the output goes";
@@ -44,6 +132,7 @@ class _MainViewState extends State<MainView> {
       TextEditingController(text: "");
   Config _config;
   DbSqlite db = DbSqlite();
+  bool _conversionFailed = false;
 
   _MainViewState() {
     Config.loadFromFile("config.json").then((value) {
@@ -90,6 +179,9 @@ class _MainViewState extends State<MainView> {
       return;
     }
 
+    // reset this value
+    _conversionFailed = false;
+
     var convertQueueEntry = itemsToConvert.first;
 
     if (convertQueueEntry.sourceDir.startsWith("//")) {
@@ -124,17 +216,70 @@ class _MainViewState extends State<MainView> {
 
     allOptions.add(convertQueueEntry.target);
 
-    var process = await Process.start(
+    var receivePort = new ReceivePort();
+    var receivedPortOnExit = new ReceivePort();
+
+    await Isolate.spawn(
+      entryPoint,
+      receivePort.sendPort,
+      onExit: receivedPortOnExit.sendPort,
+    );
+
+    //print("we are passed it");
+
+    // Receive the SendPort from the Isolate
+    SendPort sendPort = await receivePort.first;
+
+    // Send a message to the Isolate
+    //sendPort.send(_config);
+    //sendPort.send(allOptions);
+    //sendPort.send(convertQueueEntry.sourceDir);
+    //sendPort.send(convertQueueEntry);
+    ReceivePort asdf = ReceivePort();
+    sendPort.send([_config, allOptions, convertQueueEntry, asdf.sendPort]);
+
+    receivePort.close();
+
+    //await receivedPortOnExit.single;
+
+    await for (String data in asdf) {
+      this.outputTextEditingController.text += (data + '\n');
+
+      if (data.trim().toLowerCase() == "conversion failed!") {
+        this._conversionFailed = true;
+        print("the conversion failed");
+      }
+
+      if (data == "close()") {
+        asdf.close();
+      }
+    }
+
+    await receivedPortOnExit.first;
+    print("on exit received");
+
+    if (convertQueueEntry.delete == true && this._conversionFailed == false) {
+      File file = File(
+          convertQueueEntry.sourceDir + "/" + convertQueueEntry.sourceFile);
+      file.delete();
+
+      // Check if we need to delete the file
+      this.outputTextEditingController.text += ("\n\n deleted the file: " +
+          convertQueueEntry.sourceDir +
+          "/" +
+          convertQueueEntry.sourceFile +
+          '\n\n');
+    }
+
+    setState(() {
+      itemsToConvert.remove(convertQueueEntry);
+    });
+
+    /*var process = await Process.start(
       _config.ffmpegPath,
       allOptions,
       workingDirectory: convertQueueEntry.sourceDir,
     );
-
-    /*var receivePort = new ReceivePort();
-    Isolate.spawn(
-      (message) {},
-      receivePort.sendPort,
-    );*/
 
     process.stderr.transform(utf8.decoder).forEach((value) {
       this.outputTextEditingController.text += (value + '\n');
@@ -162,7 +307,7 @@ class _MainViewState extends State<MainView> {
       }
 
       callFFMPEG();
-    });
+    });*/
   }
 
   List<Widget> _getMenuItems() {
