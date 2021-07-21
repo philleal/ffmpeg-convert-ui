@@ -56,33 +56,6 @@ entryPoint(SendPort sendPort) async {
 
   // Listen for messages (optional)
   await for (var data in port) {
-    // `data` is the message received.
-    //print('received $data');
-
-    /*if (data is Config) {
-      config = data;
-      configReceived = true;
-      //print("we got the Config");
-    } else if (data is List<String>) {
-      allOptions = data;
-      allOptionsReceived = true;
-      //print("we got the options");
-    } else if (data is String) {
-      sourceDir = data;
-      sourceDirReceived = true;
-      //print("we got the sourceDir");
-    } else if (data is ConvertQueueEntry) {
-      convertQueueEntry = data;
-      convertQueueEntryReceived = true;
-    }
-
-    if (configReceived &&
-        allOptionsReceived &&
-        sourceDirReceived &&
-        convertQueueEntryReceived) {
-      break;
-    }*/
-
     config = data[0];
     allOptions = data[1];
     convertQueueEntry = data[2];
@@ -90,11 +63,6 @@ entryPoint(SendPort sendPort) async {
 
     break;
   }
-
-  //for (var i = 0; i < 100; i++) {
-  //replyTo.send("the value of i is: $i");
-  //print("sent the message $i");
-  //}
 
   var process = await Process.start(
     config.ffmpegPath,
@@ -108,19 +76,6 @@ entryPoint(SendPort sendPort) async {
   });
 
   process.exitCode.then((value) {
-    //this.outputTextEditingController.text +=
-    //("Exit code: ${value.toString()}\n");
-    //print("the exit code is: " + value.toString());
-
-    /*if (convertQueueEntry.delete == true) {
-      File file = File(
-          convertQueueEntry.sourceDir + "/" + convertQueueEntry.sourceFile);
-      file.delete();
-
-      replyTo.send(
-          "deleted the file: ${convertQueueEntry.sourceDir}/${convertQueueEntry.sourceFile}");
-    }*/
-
     replyTo.send("close()");
   });
 }
@@ -274,6 +229,8 @@ class _MainViewState extends State<MainView> {
     setState(() {
       itemsToConvert.remove(convertQueueEntry);
     });
+
+    callFFMPEG();
 
     /*var process = await Process.start(
       _config.ffmpegPath,
