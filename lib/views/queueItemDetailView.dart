@@ -69,7 +69,7 @@ class _QueueItemDetailViewState extends State<QueueItemDetailView> {
                                   .video, // Available: `any`, `audio`, `image`, `video`, `custom`. Note: not available using FDE
                               fileExtension:
                                   //'txt, md' // Only if FileTypeCross.custom . May be any file extension like `dot`, `ppt,pptx,odp`
-                                  'mp4');
+                                  'mp4, m4v, mpg, mpeg');
 
                       print(myFile.directory);
                       print(myFile.fileName);
@@ -79,8 +79,17 @@ class _QueueItemDetailViewState extends State<QueueItemDetailView> {
                       sourcePathController.text =
                           myFile.directory + "/" + myFile.fileName;
 
+                      var split_data = myFile.fileName.split(".");
+
+                      //print(myFile.fileName
+                      //.substring(0, myFile.fileName.lastIndexOf(".")));
+                      //print(myFile.fileName.lastIndexOf("."));
+
+                      //print(
+                      //"${split_data[0]}-smaller.${split_data[split_data.length - 1]}");
+
                       targetPathController.text =
-                          myFile.directory + "/" + "new_" + myFile.fileName;
+                          "${myFile.directory}/${myFile.fileName.substring(0, myFile.fileName.lastIndexOf("."))}-smaller.${split_data[split_data.length - 1]}";
                     },
                     color: Colors.blue,
                     textColor: Colors.white,
